@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#dc3545">
+    <title>Admin Portal - Event Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(45deg, #0a0a23, #1a1a3e, #2d1b69, #4c2885);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(2px 2px at 25px 35px, #fff, transparent),
+                radial-gradient(2px 2px at 45px 75px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 95px 45px, #fff, transparent),
+                radial-gradient(1px 1px at 135px 85px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 165px 35px, #fff, transparent),
+                radial-gradient(1px 1px at 205px 95px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 245px 55px, #fff, transparent),
+                radial-gradient(1px 1px at 285px 25px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 325px 105px, #fff, transparent),
+                radial-gradient(2px 2px at 365px 65px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 405px 15px, #fff, transparent),
+                radial-gradient(2px 2px at 445px 85px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 485px 45px, #fff, transparent),
+                radial-gradient(1px 1px at 525px 95px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 565px 25px, #fff, transparent);
+            background-repeat: repeat;
+            background-size: 600px 120px;
+            animation: starsMove 25s linear infinite;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(3px 3px at 65px 20px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(2px 2px at 125px 50px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 185px 90px, #fff, transparent),
+                radial-gradient(2px 2px at 305px 30px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 425px 70px, #fff, transparent),
+                radial-gradient(3px 3px at 505px 100px, rgba(255,255,255,0.6), transparent);
+            background-repeat: repeat;
+            background-size: 800px 140px;
+            animation: starsMove 35s linear infinite reverse;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            width: 420px;
+            text-align: center;
+            transform: perspective(1000px) rotateX(5deg);
+            animation: containerFloat 6s ease-in-out infinite;
+            color: white;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: logoSpin 4s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.3);
+            min-height: 50px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(220, 53, 69, 0.4);
+        }
+        
+        .error-message {
+            background: rgba(248, 215, 218, 0.9);
+            color: #721c24;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: errorShake 0.5s ease-in-out;
+        }
+        
+        .dashboard {
+            display: none;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: headerFloat 8s ease-in-out infinite;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .events-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        
+        .event-admin-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            transform: perspective(1000px) rotateX(5deg);
+            animation: cardFloat 8s ease-in-out infinite;
+            color: white;
+        }
+        
+        .event-admin-card:hover {
+            transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .event-admin-card h3 {
+            color: #fd7e14;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(253, 126, 20, 0.3);
+        }
+        
+        .participant-count {
+            background: rgba(253, 126, 20, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: countPulse 2s ease-in-out infinite;
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-view {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: white;
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        .participants-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .participants-table th,
+        .participants-table td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+        }
+        
+        .participants-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+        
+        .download-btn {
+            background: linear-gradient(45deg, #6f42c1, #e83e8c);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes starsMove {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-120px); }
+        }
+        
+        @keyframes containerFloat {
+            0%, 100% { transform: perspective(1000px) rotateX(5deg) translateY(0px); }
+            50% { transform: perspective(1000px) rotateX(5deg) translateY(-10px); }
+        }
+        
+        @keyframes logoSpin {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+        }
+        
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+            100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(220, 53, 69, 0.3); }
+        }
+        
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        @keyframes headerFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes cardFloat {
+            0%, 100% { transform: perspective(1000px) rotateX(5deg) translateY(0px); }
+            50% { transform: perspective(1000px) rotateX(5deg) translateY(-3px); }
+        }
+        
+        @keyframes countPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes modalSlide {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .events-container { grid-template-columns: 1fr; }
+            .dashboard-header { flex-direction: column; gap: 1rem; text-align: center; }
+            .admin-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="login-box">
+            <div class="logo">🛠️</div>
+            <h2>Admin Login</h2>
+            
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </div>
+                
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="dashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1>🛠️ Admin Dashboard</h1>
+                <p>Event Management Portal</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="events-container">
+            <div class="event-admin-card">
+                <h3>Tech Symposium 2024</h3>
+                <p><strong>📅 Date:</strong> March 15, 2024 | 10:00 AM</p>
+                <p><strong>📍 Venue:</strong> Main Auditorium</p>
+                <p><strong>💰 Entry Fee:</strong> ₹200</p>
+                <div class="participant-count">
+                    👥 <span id="admin-tech-count">47</span> Participants Registered
+                </div>
+                <div class="admin-actions">
+                    <button class="btn-view" onclick="viewParticipants('Tech Symposium 2024')">View Participants</button>
+                    <button class="btn-edit" onclick="editEvent('Tech Symposium 2024')">Edit Event</button>
+                </div>
+            </div>
+            
+            <div class="event-admin-card">
+                <h3>Cultural Fest 2024</h3>
+                <p><strong>📅 Date:</strong> March 20, 2024 | 2:00 PM</p>
+                <p><strong>📍 Venue:</strong> College Ground</p>
+                <p><strong>💰 Entry Fee:</strong> ₹150</p>
+                <div class="participant-count">
+                    👥 <span id="admin-cultural-count">89</span> Participants Registered
+                </div>
+                <div class="admin-actions">
+                    <button class="btn-view" onclick="viewParticipants('Cultural Fest 2024')">View Participants</button>
+                    <button class="btn-edit" onclick="editEvent('Cultural Fest 2024')">Edit Event</button>
+                </div>
+            </div>
+            
+            <div class="event-admin-card">
+                <h3>Sports Meet 2024</h3>
+                <p><strong>📅 Date:</strong> March 25, 2024 | 8:00 AM</p>
+                <p><strong>📍 Venue:</strong> Sports Complex</p>
+                <p><strong>💰 Entry Fee:</strong> ₹100</p>
+                <div class="participant-count">
+                    👥 <span id="admin-sports-count">156</span> Participants Registered
+                </div>
+                <div class="admin-actions">
+                    <button class="btn-view" onclick="viewParticipants('Sports Meet 2024')">View Participants</button>
+                    <button class="btn-edit" onclick="editEvent('Sports Meet 2024')">Edit Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Event Modal -->
+    <div id="editEventModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Event</h2>
+            <form id="editEventForm">
+                <div class="form-group">
+                    <label>Event Name</label>
+                    <input type="text" id="editEventName" required>
+                </div>
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" id="editEventDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Venue</label>
+                    <input type="text" id="editEventVenue" required>
+                </div>
+                <div class="form-group">
+                    <label>Entry Fee (₹)</label>
+                    <input type="number" id="editEventFee" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editEventDescription" rows="3" style="width:100%;padding:12px;border:none;border-radius:10px;background:rgba(255,255,255,0.1);color:#fff;"></textarea>
+                </div>
+                <div class="btn-group" style="display:flex;gap:10px;margin-top:20px;">
+                    <button type="submit" class="btn" style="flex:1;">Save Changes</button>
+                    <button type="button" class="btn" style="flex:1;background:rgba(255,255,255,0.2);" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Participants Modal -->
+    <div id="participantsModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalEventTitle">Event Participants</h2>
+            <button class="download-btn" onclick="downloadPDF()">📈 Download Excel</button>
+            <button class="download-btn" onclick="closeModal()">❌ Close</button>
+            
+            <table class="participants-table" id="participantsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>College</th>
+                        <th>Department</th>
+                        <th>Year</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Fee</th>
+                    </tr>
+                </thead>
+                <tbody id="participantsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        let currentEventForView = '';
+        let currentEventForEdit = '';
+        
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (username === 'darshithgowda' && password === 'darshithgowda@123') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+                updateAdminCounts();
+            } else {
+                errorDiv.textContent = 'Invalid credentials. Please try again.';
+                errorDiv.style.display = 'block';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        });
+        
+        function logout() {
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboardSection').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+        
+        function updateAdminCounts() {
+            const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
+            
+            const techCount = registrations.filter(reg => reg.event.includes('Tech')).length;
+            const culturalCount = registrations.filter(reg => reg.event.includes('Cultural')).length;
+            const sportsCount = registrations.filter(reg => reg.event.includes('Sports')).length;
+            
+            document.getElementById('admin-tech-count').textContent = 47 + techCount;
+            document.getElementById('admin-cultural-count').textContent = 89 + culturalCount;
+            document.getElementById('admin-sports-count').textContent = 156 + sportsCount;
+        }
+        
+        function viewParticipants(eventName) {
+            currentEventForView = eventName;
+            document.getElementById('modalEventTitle').textContent = `${eventName} - Participants`;
+            
+            const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
+            const eventRegistrations = registrations.filter(reg => reg.event === eventName);
+            
+            const tableBody = document.getElementById('participantsTableBody');
+            tableBody.innerHTML = '';
+            
+            // Add sample data + real registrations
+            const sampleData = [
+                { fullName: 'Rahul Kumar', college: 'ABC Engineering College', department: 'Computer Science', currentYear: '3rd Year', phone: '+91 9876543210', email: 'rahul@example.com', fee: 200 },
+                { fullName: 'Priya Sharma', college: 'XYZ College', department: 'Electronics', currentYear: '2nd Year', phone: '+91 9876543211', email: 'priya@example.com', fee: 200 },
+                { fullName: 'Amit Patel', college: 'DEF Institute', department: 'Mechanical', currentYear: '4th Year', phone: '+91 9876543212', email: 'amit@example.com', fee: 200 }
+            ];
+            
+            const allParticipants = [...sampleData, ...eventRegistrations];
+            
+            allParticipants.forEach(participant => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${participant.fullName}</td>
+                    <td>${participant.college}</td>
+                    <td>${participant.department}</td>
+                    <td>${participant.currentYear}</td>
+                    <td>${participant.phone}</td>
+                    <td>${participant.email}</td>
+                    <td>₹${participant.fee}</td>
+                `;
+            });
+            
+            document.getElementById('participantsModal').style.display = 'flex';
+        }
+        
+        function editEvent(eventName) {
+            currentEventForEdit = eventName;
+            const eventData = getEventData(eventName);
+            
+            document.getElementById('editEventName').value = eventData.name;
+            document.getElementById('editEventDate').value = eventData.date;
+            document.getElementById('editEventVenue').value = eventData.venue;
+            document.getElementById('editEventFee').value = eventData.fee;
+            document.getElementById('editEventDescription').value = eventData.description;
+            
+            document.getElementById('editEventModal').style.display = 'flex';
+        }
+        
+        function getEventData(eventName) {
+            const events = {
+                'Tech Symposium 2024': {
+                    name: 'Tech Symposium 2024',
+                    date: '2024-03-15T10:00',
+                    venue: 'Main Auditorium',
+                    fee: 200,
+                    description: 'Annual technology symposium featuring latest trends in AI and Machine Learning'
+                },
+                'Cultural Fest 2024': {
+                    name: 'Cultural Fest 2024',
+                    date: '2024-03-20T14:00',
+                    venue: 'College Ground',
+                    fee: 150,
+                    description: 'Inter-college cultural festival with dance, music and drama competitions'
+                },
+                'Sports Meet 2024': {
+                    name: 'Sports Meet 2024',
+                    date: '2024-03-25T08:00',
+                    venue: 'Sports Complex',
+                    fee: 100,
+                    description: 'Annual inter-department sports competition with various indoor and outdoor games'
+                }
+            };
+            return events[eventName] || {};
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editEventModal').style.display = 'none';
+        }
+        
+        function closeModal() {
+            document.getElementById('participantsModal').style.display = 'none';
+        }
+        
+        function downloadPDF() {
+            const participants = document.querySelectorAll('#participantsTableBody tr');
+            
+            // Create Excel-like CSV data
+            let csvContent = 'Name,College,Department,Year,Phone,Email,Fee\n';
+            
+            participants.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = Array.from(cells).map(cell => `"${cell.textContent}"`).join(',');
+                csvContent += rowData + '\n';
+            });
+            
+            // Create downloadable Excel file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentEventForView.replace(/\\s+/g, '_')}_Participants.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('✅ Participant data downloaded as Excel file!\n\nFile: ' + currentEventForView.replace(/\\s+/g, '_') + '_Participants.csv');
+        }
+        
+        // Auto-fill login credentials for demo
+        window.onload = function() {
+            document.getElementById('username').value = 'darshithgowda';
+            document.getElementById('password').value = 'darshithgowda@123';
+        };
+        
+        // Edit event form submission
+        document.getElementById('editEventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const updatedData = {
+                name: document.getElementById('editEventName').value,
+                date: document.getElementById('editEventDate').value,
+                venue: document.getElementById('editEventVenue').value,
+                fee: document.getElementById('editEventFee').value,
+                description: document.getElementById('editEventDescription').value
+            };
+            
+            alert(`✅ Event "${currentEventForEdit}" updated successfully!\n\nNew Details:\n• Name: ${updatedData.name}\n• Date: ${new Date(updatedData.date).toLocaleString()}\n• Venue: ${updatedData.venue}\n• Fee: ₹${updatedData.fee}`);
+            
+            closeEditModal();
+        });
+    </script>
+</body>
+</html>
